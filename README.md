@@ -2,7 +2,7 @@
 RSA - File Encryption.
 
 ## What is RSA ? 
-RSA is algorithm using for encrypting and decrypting data. 
+RSA is algorithm using for encrypting and decrypting data. \n
 It is in the class of asymmetric cryptographic algorithm (public key cryptography). 
 Asymmetric cryptographic algorithm has two different keys. 
 They are *public key and private key*. Public key is given everyone. 
@@ -29,7 +29,7 @@ m = c^d mod (n)
 
 **1 -** p = 3 and q = 11 <br />
 **2 -** modulus n = 3 * 11 = 33 <br />
-**3 -** totient Q(n) = (3 - 1) * (11 - 1) = 20 <br />
+**3 -** Euler's totient Q(n) = (3 - 1) * (11 - 1) = 20 <br />
 **4 -** 1 < e < 20 and e = 7 <br />
 **5 -** d * e mod Q(n) = 1 and 7d mod 20 = 1, d = 3 <br />
 <br />
