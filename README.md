@@ -63,3 +63,6 @@ Here you can see the [source code](https://github.com/username1565/rsaVault/tree
 and [instructions for compilation](https://github.com/username1565/rsaVault/blob/master/rsaVault/Compile.bat).
 
 Win32 executable EXE (x86) you can find [in "Releases"](https://github.com/username1565/rsaVault/releases).
+___
+UPD: Maybe possible to add arguments, and run this program from command-line, with specified pathways.
+See this [Issue](https://github.com/username1565/rsaVault/issues/2)
