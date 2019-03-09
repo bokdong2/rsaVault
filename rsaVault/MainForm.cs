@@ -7,6 +7,8 @@ namespace rsaVault
 {
     public partial class MainForm : Form
     {
+		public static int bitlength = 4096; //4096 bits is bitlength for keys, by default. 4096 [bits] / 8 [bits/bytes] = 512 [bytes] - in each block of cyphertext.
+		
         public MainForm()
         {
             InitializeComponent();
@@ -34,8 +36,11 @@ namespace rsaVault
 
         private void btnGenerate_Click(object sender, EventArgs e)
         {
-            rsa = new RSACryptoServiceProvider();
-            lblStatus.Text = "New key pair generated";
+			//int bitlength = 2048;
+			
+            //rsa = new RSACryptoServiceProvider();
+			rsa = new RSACryptoServiceProvider(bitlength);
+            lblStatus.Text = "New key pair generated! BitLength: "+bitlength+" bits ("+bitlength/8+" bytes).";
         }
 
         private void btnLoadPublic_Click(object sender, EventArgs e)
@@ -200,33 +205,67 @@ namespace rsaVault
 
         private void Encrypt()
         {
+		//	string debug = @"debug.log";
+			
+		//	if (!File.Exists(debug)) 
+		//	{
+		//		// Create a file to write to.
+		//		using (StreamWriter sw = File.CreateText(debug)) 
+		//		{
+		//			sw.WriteLine("Hello");
+		//			sw.WriteLine("And");
+		//			sw.WriteLine("Welcome");
+		//		}	
+		//	}
+			
+
             try
             {
+		//		File.AppendAllText("debug.log", "\n\n"+"Encrypt"+": \n");
+
+				int block_length 	= 	(bitlength/8)-12;						//block length for source file
+				int block_size 		= 	(bitlength/8);							//block length for destination file
+				
+		//		File.AppendAllText("debug.log", "\nSource file: "+"block_length"+": "+block_length);				
                 GoToBusyMode();
                 progressBar.Minimum = 0;
+		//			File.AppendAllText("debug.log", "\n"+"progressBar.Minimum"+": "+progressBar.Minimum);
                 System.IO.FileInfo finfo = new System.IO.FileInfo(inFile);
-                progressBar.Maximum = (int)(finfo.Length / 32);
+                //progressBar.Maximum = (int)(finfo.Length / 32);
+				progressBar.Maximum = (int)(finfo.Length / block_length);
+		//			File.AppendAllText("debug.log", "\n"+"progressBar.Maximum"+": "+progressBar.Maximum);
                 progressBar.Value = 0;
+		//			File.AppendAllText("debug.log", "\n"+"progressBar.Value"+": "+progressBar.Value);
                 lblStatus.Text = "Encrypting...";
+		//			File.AppendAllText("debug.log", "\n"+"lblStatus.Text"+": "+lblStatus.Text);
 
                 System.IO.FileStream fout = System.IO.File.Open(outFile, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Write);
                 System.IO.FileStream fin = System.IO.File.Open(inFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read);
-                byte[] buffer = new byte[32];
-                byte[] encbuffer = new byte[32];
+                //byte[] buffer = new byte[32];
+				byte[] buffer = new byte[block_length];
+		//			File.AppendAllText("debug.log", "\n"+"buffer.Length"+": "+buffer.Length);
+                //byte[] encbuffer = new byte[32];
+				byte[] encbuffer = new byte[block_size];
+		//			File.AppendAllText("debug.log", "\n"+"encbuffer.Length"+": "+encbuffer.Length);
                 int c = 0;
-                while ((c = fin.Read(buffer, 0, 32)) > 0)
+		//			File.AppendAllText("debug.log", "\n"+"c"+": "+c);
+                //while ((c = fin.Read(buffer, 0, 32)) > 0)
+                while ((c = fin.Read(buffer, 0, block_length)) > 0)
                 {
+					//File.AppendAllText("debug.log", "\n"+"c"+": "+c);
                     if (c != buffer.Length)
                     {
                         byte[] buffer2 = new byte[c];
                         for (int i = 0; i < c; i++)
                             buffer2[i] = buffer[i];
                         encbuffer = rsa.Encrypt(buffer2, false);
+							//File.AppendAllText("debug.log", "\nif: "+"encbuffer.Length"+": "+encbuffer.Length);
                         fout.Write(encbuffer, 0, encbuffer.Length);
                     }
                     else
                     {
                         encbuffer = rsa.Encrypt(buffer, false);
+							//File.AppendAllText("debug.log", "\nelse: "+"encbuffer.Length"+": "+encbuffer.Length);
                         fout.Write(encbuffer, 0, encbuffer.Length);
                     }
                     progressBar.Increment(1);
@@ -251,22 +290,46 @@ namespace rsaVault
 
         private void Decrypt()
         {
-            try
+			
+		//	string debug = @"debug.log";
+		//	if (!File.Exists(debug)) 
+		//	{
+		//		// Create a file to write to.
+		//		using (StreamWriter sw = File.CreateText(debug)) 
+		//		{
+		//			sw.WriteLine("Hello");
+		//			sw.WriteLine("And");
+		//			sw.WriteLine("Welcome");
+		//		}	
+		//	}
+
+			try
             {
+		//		File.AppendAllText("debug.log", "\n\n"+"Decrypt"+": \n");
                 GoToBusyMode();
+				int block_size = (bitlength/8);
+		//			File.AppendAllText("debug.log", "\n"+"Cypher file: block_size"+": "+block_size);
                 progressBar.Minimum = 0;
+		//			File.AppendAllText("debug.log", "\nprogressBar.Minimum: "+progressBar.Minimum);
                 System.IO.FileInfo finfo = new System.IO.FileInfo(inFile);
-                progressBar.Maximum = (int)(finfo.Length / 128);
+                progressBar.Maximum = (int)(finfo.Length / block_size);
+		//			File.AppendAllText("debug.log", "\nprogressBar.Maximum: "+progressBar.Maximum);
                 progressBar.Value = 0;
+		//			File.AppendAllText("debug.log", "\nprogressBar.Value: "+progressBar.Value);
                 lblStatus.Text = "Decrypting...";
+		//			File.AppendAllText("debug.log", "\nlblStatus.Text: "+lblStatus.Text);
 
                 System.IO.FileStream fin = System.IO.File.Open(inFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read);
                 System.IO.FileStream fout = System.IO.File.Open(outFile, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Write);
-                byte[] buffer = new byte[128];
-                byte[] encbuffer = new byte[128];
+                byte[] buffer = new byte[block_size];
+		//			File.AppendAllText("debug.log", "\n"+"buffer.Length"+": "+buffer.Length);
+                byte[] encbuffer = new byte[block_size];
+		//			File.AppendAllText("debug.log", "\n"+"encbuffer.Length"+": "+encbuffer.Length);
                 int c = 0;
-                while ((c = fin.Read(buffer, 0, 128)) > 0)
+		//			File.AppendAllText("debug.log", "\n"+"c"+": "+c);
+                while ((c = fin.Read(buffer, 0, block_size)) > 0)
                 {
+		//			File.AppendAllText("debug.log", "\n"+"c"+": "+c);
                     encbuffer = rsa.Decrypt(buffer, false);
                     fout.Write(encbuffer, 0, encbuffer.Length);
                     progressBar.Increment(1);
