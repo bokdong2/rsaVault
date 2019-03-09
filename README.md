@@ -2,7 +2,7 @@
 RSA - File Encryption.
 
 ## What is RSA ? 
-RSA is algorithm using for encrypting and decrypting data. \n
+RSA is algorithm using for encrypting and decrypting data. 
 It is in the class of asymmetric cryptographic algorithm (public key cryptography). 
 Asymmetric cryptographic algorithm has two different keys. 
 They are *public key and private key*. Public key is given everyone. 
@@ -59,6 +59,7 @@ Fast to encrypt, and slow decryption, because for each block:
 
 _____
 
-Here you can see the [source code](https://github.com/username1565/rsaVault/tree/master/rsaVault) and [instructions for compilation](https://github.com/username1565/rsaVault/blob/master/rsaVault/Compile.bat).
+Here you can see the [source code](https://github.com/username1565/rsaVault/tree/master/rsaVault)
+and [instructions for compilation](https://github.com/username1565/rsaVault/blob/master/rsaVault/Compile.bat).
 
-Win32 executable EXE (x86) you can find [in releases](https://github.com/username1565/rsaVault/releases).
+Win32 executable EXE (x86) you can find [in "Releases"](https://github.com/username1565/rsaVault/releases).
