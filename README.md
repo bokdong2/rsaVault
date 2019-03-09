@@ -15,7 +15,7 @@ More information about [RSA Algorithm] (https://simple.wikipedia.org/wiki/RSA_(a
 **2 -** Calculate modulus for private key and public key. n = p * q <br />
 **3 -** Caluclate totient. Q(n) = (p -1) * (q -1) <br />
 **4 -** Define public key exponent (e). e must be in 1 < e < Q(n). e and Q(n) are relatively prime. <br />
-**5 -** Define private key exponent (d). It must be secret. d*e = 1 + kQ(n). d must be in 1 < d < Q(n) <br />
+**5 -** Define private key exponent (d). It must be secret. d * e = 1 + kQ(n). d must be in 1 < d < Q(n) <br />
 
 ### Encrypt Message
 
@@ -31,7 +31,7 @@ m = c^d mod (n)
 **2 -** modulus n = 3 * 11 = 33 <br />
 **3 -** totient Q(n) = (3 - 1) * (11 - 1) = 20 <br />
 **4 -** 1 < e < 20 and e = 7 <br />
-**5 -** de mod Q(n) = 1 and 7d mod 20 = 1, d = 3 <br />
+**5 -** d * e mod Q(n) = 1 and 7d mod 20 = 1, d = 3 <br />
 <br />
 Message can be 4. m = 4 <br />
 **Encrypt message:** c = 4^7 mod (33) = 16384 mod (33) and c = 16. Encrypted message is 16 <br />
