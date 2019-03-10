@@ -34,17 +34,39 @@ namespace rsaVault
 
         }
 
+		private void SetStatus(string status) 
+		{
+			lblStatus.Text = status;
+			lblStatus.Invalidate();
+			Application.DoEvents();
+		}
+
         private void btnGenerate_Click(object sender, EventArgs e)
         {
 			//int bitlength = 2048;
+			SetStatus("Wait for generate keys... (key size bitlength = "+bitlength+" bits)");
 			
-            //rsa = new RSACryptoServiceProvider();
-			rsa = new RSACryptoServiceProvider(bitlength);
-            lblStatus.Text = "New key pair generated! BitLength: "+bitlength+" bits ("+bitlength/8+" bytes).";
+			progressBar.Minimum = 0;
+			progressBar.Maximum = 100;
+			progressBar.Value = 0;
+			GoToBusyMode();
+
+			try{
+				rsa = new RSACryptoServiceProvider(bitlength);
+				RSAParameters pa = rsa.ExportParameters(true);
+
+				progressBar.Increment(100);
+				lblStatus.Text = "New key pair generated! BitLength: "+bitlength+" bits ("+bitlength/8+" bytes).";
+			}catch (Exception ex){
+                MessageBox.Show("Error:" + ex.Message);
+            }
+
+            GoToReadyMode();
         }
 
         private void btnLoadPublic_Click(object sender, EventArgs e)
         {
+			SetStatus("Select file with public key...");
 
             try
             {
@@ -69,6 +91,8 @@ namespace rsaVault
 
         private void btnLoadPrivate_Click(object sender, EventArgs e)
         {
+			SetStatus("Select file with private key...");
+
             try
             {
                 OpenFileDialog o = new OpenFileDialog();
@@ -101,13 +125,15 @@ namespace rsaVault
 
         private void btnSavePublic_Click(object sender, EventArgs e)
         {
+			SetStatus("Input filename to save public key...");
+
             try
             {
                 SaveFileDialog s = new SaveFileDialog();
                 s.Filter = "RSA Key Files(*.rkf)|*.rkf";
                 if (s.ShowDialog() == DialogResult.OK)
                 {
-                    RSAParameters pa = rsa.ExportParameters(true);
+                    //RSAParameters pa = rsa.ExportParameters(true);
                     if (System.IO.File.Exists(s.FileName))
                         System.IO.File.Delete(s.FileName);
                     System.IO.StreamWriter writer = System.IO.File.CreateText(s.FileName);
@@ -135,13 +161,15 @@ namespace rsaVault
 
         private void btnSavePrivate_Click(object sender, EventArgs e)
         {
+			SetStatus("Input filename to save private key...");
+
             try
             {
                 SaveFileDialog s = new SaveFileDialog();
                 s.Filter = "RSA Key Files(*.rkf)|*.rkf";
                 if (s.ShowDialog() == DialogResult.OK)
                 {
-                    RSAParameters pa = rsa.ExportParameters(true);
+                    //RSAParameters pa = rsa.ExportParameters(true);
                     if (System.IO.File.Exists(s.FileName))
                         System.IO.File.Delete(s.FileName);
                     System.IO.StreamWriter writer = System.IO.File.CreateText(s.FileName);
@@ -169,6 +197,8 @@ namespace rsaVault
 
         private void btnEncrypt_Click(object sender, EventArgs e)
         {
+			SetStatus("Select file to encrypt it...");
+
             try
             {
                 OpenFileDialog o = new OpenFileDialog();
@@ -196,6 +226,10 @@ namespace rsaVault
 
         private void btnDecrypt_Click(object sender, EventArgs e)
         {
+			SetStatus(	"Select file to decrypt it...\n"+
+						"WARNING! (\"src.ext.encrypted\" -> \"src.ext\") and src.ext CAN BE OVERWRITTED."
+			);
+
             try
             {
                 OpenFileDialog o = new OpenFileDialog();
@@ -237,6 +271,9 @@ namespace rsaVault
 		//	}
 			
 
+			System.IO.FileStream fout = System.IO.File.Open(outFile, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Write);
+			System.IO.FileStream fin = System.IO.File.Open(inFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read);
+
             try
             {
 		//		File.AppendAllText("debug.log", "\n\n"+"Encrypt"+": \n");
@@ -257,8 +294,6 @@ namespace rsaVault
                 lblStatus.Text = "Encrypting...";
 		//			File.AppendAllText("debug.log", "\n"+"lblStatus.Text"+": "+lblStatus.Text);
 
-                System.IO.FileStream fout = System.IO.File.Open(outFile, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Write);
-                System.IO.FileStream fin = System.IO.File.Open(inFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read);
                 //byte[] buffer = new byte[32];
 				byte[] buffer = new byte[block_length];
 		//			File.AppendAllText("debug.log", "\n"+"buffer.Length"+": "+buffer.Length);
@@ -288,13 +323,16 @@ namespace rsaVault
                     }
                     progressBar.Increment(1);
                 }
-                fin.Close();
-                fout.Close();
+				
+				fin.Close();
+				fout.Close();
                 lblStatus.Text = "Encryption successful";
                 GoToReadyMode();
             }
             catch (Exception ex)
             {
+				fin.Close();
+				fout.Close();
                 MessageBox.Show("Error:" + ex.Message);
                 thread.Abort();
                 GoToReadyMode();
@@ -303,7 +341,8 @@ namespace rsaVault
 
         private void linklabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            
+			SetStatus("Commits and modifications of this OPEN SOURCE CODE - you can see here.");
+            System.Diagnostics.Process.Start("https://github.com/bokdong2/rsaVault/network/");
         }
 
         private void Decrypt()
@@ -321,6 +360,9 @@ namespace rsaVault
 		//		}	
 		//	}
 
+			System.IO.FileStream fin = System.IO.File.Open(inFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read);
+			System.IO.FileStream fout = System.IO.File.Open(outFile, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Write);
+
 			try
             {
 		//		File.AppendAllText("debug.log", "\n\n"+"Decrypt"+": \n");
@@ -337,8 +379,6 @@ namespace rsaVault
                 lblStatus.Text = "Decrypting...";
 		//			File.AppendAllText("debug.log", "\nlblStatus.Text: "+lblStatus.Text);
 
-                System.IO.FileStream fin = System.IO.File.Open(inFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read);
-                System.IO.FileStream fout = System.IO.File.Open(outFile, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.Write);
                 byte[] buffer = new byte[block_size];
 		//			File.AppendAllText("debug.log", "\n"+"buffer.Length"+": "+buffer.Length);
                 byte[] encbuffer = new byte[block_size];
@@ -352,13 +392,15 @@ namespace rsaVault
                     fout.Write(encbuffer, 0, encbuffer.Length);
                     progressBar.Increment(1);
                 }
-                fin.Close();
-                fout.Close();
                 lblStatus.Text = "Decryption successful";
                 GoToReadyMode();
+				fin.Close();
+				fout.Close();
             }
             catch (Exception ex)
             {
+				fin.Close();
+				fout.Close();
                 MessageBox.Show("Error:" + ex.Message);
                 thread.Abort();
                 GoToReadyMode();
