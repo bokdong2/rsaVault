@@ -111,8 +111,17 @@ namespace rsaVault
                     if (System.IO.File.Exists(s.FileName))
                         System.IO.File.Delete(s.FileName);
                     System.IO.StreamWriter writer = System.IO.File.CreateText(s.FileName);
-                    writer.Write(rsa.ToXmlString(false));
-                    writer.Close();
+					
+					string xml_pub = 	rsa.ToXmlString(false)
+										.Replace("<", "\n\t<")
+										.Replace(">",">\n\t\t")
+										.Replace("\t\t\n","")
+										.Replace("\t</RSAKeyValue>\n\t\t","</RSAKeyValue>")
+										.Replace("\n\t<R","<R")
+					;
+					writer.Write(xml_pub);
+                    
+					writer.Close();
                     lblStatus.Text = "Public key saved to: " + s.FileName;
                 }
             }
@@ -136,8 +145,17 @@ namespace rsaVault
                     if (System.IO.File.Exists(s.FileName))
                         System.IO.File.Delete(s.FileName);
                     System.IO.StreamWriter writer = System.IO.File.CreateText(s.FileName);
-                    writer.Write(rsa.ToXmlString(true));
-                    writer.Close();
+					
+					string xml_priv = 	rsa.ToXmlString(true)
+										.Replace("<", "\n\t<")
+										.Replace(">",">\n\t\t")
+										.Replace("\t\t\n","")
+										.Replace("\t</RSAKeyValue>\n\t\t","</RSAKeyValue>")
+										.Replace("\n\t<R","<R")
+					;
+					writer.Write(xml_priv);
+                    
+					writer.Close();
                     lblStatus.Text = "Private key saved to: " + s.FileName;
                 }
             }
