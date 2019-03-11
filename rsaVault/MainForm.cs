@@ -7,10 +7,11 @@ namespace rsaVault
 {
     public partial class MainForm : Form
     {
-		public static int bitlength = 4096; //4096 bits is bitlength for keys, by default. 4096 [bits] / 8 [bits/bytes] = 512 [bytes] - in each block of cyphertext.
+		public static int bitlength = 4096;	//4096 bits is bitlength for keys, by default. 4096 [bits] / 8 [bits/bytes] = 512 [bytes] - in each block of cyphertext.
 		
         public MainForm()
         {
+			this.TopMost = true;			//show before all windows
             InitializeComponent();
         }
 
