@@ -5,7 +5,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{997AAB16-7FC1-492F-8323-7B5F701D8A60}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
+	<ApplicationIcon>Encrypt.ico</ApplicationIcon>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>rsaVault</RootNamespace>
     <AssemblyName>rsaVault</AssemblyName>
